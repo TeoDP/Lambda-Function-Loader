@@ -59,8 +59,21 @@ ssize_t send_socket(int fd, const char *buf, size_t len)
 ssize_t recv_socket(int fd, char *buf, size_t len)
 {
 	/* TODO: Implement recv_socket(). */
-	// TOOD get the data from the client 
-	return -1;
+	// TOOD get the data from the client
+
+	while (len > 0) {
+		ssize_t rec = recv(fd, buf, sizeof(buf));
+		if (rec < 0) {
+			perror("receive failed");
+			return -1;
+		}
+		len = len - rec;
+		if (rec == 0) {
+			break;
+		}
+	}
+
+	return 0;
 }
 
 void close_socket(int fd)
