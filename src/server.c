@@ -125,7 +125,7 @@ int main(void)
 	DIE(rc < 0, "listen");
 
 	int ret;
-	struct lib lib;
+	// struct lib lib;
 
 	while (1) {
 		/* TODO - get message from client */
@@ -154,9 +154,10 @@ int main(void)
 		// client_data->outputfile = calloc(BUFSIZE, sizeof(char));
 		
 		/* TODO - handle request from client */
-		ret = lib_run(&lib);
+		ret = lib_run(client_data);
 
-		send_socket(socketfd, client_data->outputfile, strlen(client_data->outputfile));
+		send_socket(socketfd, client_data->outputfile, strlen(client_data->outputfile) + 1);
+		// free(raw_data);
 		close (client_fd);
 	}
 

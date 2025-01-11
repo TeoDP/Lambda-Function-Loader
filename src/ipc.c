@@ -43,6 +43,7 @@ ssize_t send_socket(int fd, const char *buf, size_t len)
 	// hello
 	int rc = 0;
 	int size_left = len;
+	fflush(stdout);
 	// doing a while loop so that if the data cannot be sent in one go, it will be sent through several send calls
 	while (size_left > 0) {
 		rc = send(fd, buf + len - size_left, size_left, 0);
