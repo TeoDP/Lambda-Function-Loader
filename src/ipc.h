@@ -17,3 +17,20 @@ ssize_t recv_socket(int fd, char *buf, size_t len);
 void close_socket(int fd);
 
 #endif /* _IPC_H */
+
+/* error printing macro */
+#define ERR(call_description)				\
+	do {						\
+		fprintf(stderr, "(%s, %d): ",		\
+			__FILE__, __LINE__);		\
+		perror(call_description);		\
+	} while (0)
+
+/* print error (call ERR) and exit */
+#define DIE(assertion, call_description)		\
+	do {						\
+		if (assertion) {			\
+			ERR(call_description);		\
+			exit(EXIT_FAILURE);		\
+		}					\
+	} while (0)
