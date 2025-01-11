@@ -92,7 +92,8 @@ int main(void)
 	struct sockaddr_un *addr = calloc(1, sizeof(*addr));
 	addr->sun_family = AF_UNIX;
 	snprintf(addr->sun_path, strlen(SOCKET_NAME) + 1, SOCKET_NAME);
-	
+
+	unlink(SOCKET_NAME);
 	rc = bind(socketfd, (struct sockaddr *) addr, sizeof(*addr));
 	DIE(rc < 0, "bind");
 
