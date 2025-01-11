@@ -105,7 +105,26 @@ int main(void)
 
 	while (1) {
 		/* TODO - get message from client */
+
+		struct sockaddr_un *client_addr = calloc(1, sizeof(*addr));
+		client_addr->sun_family = AF_UNIX;
+		snprintf(client_addr->sun_path, strlen(SOCKET_NAME) + 1, SOCKET_NAME);
+		
+		int client_fd = accept(socketfd, (struct sockaddr *) client_addr, sizeof(*client_addr));
+
+		char *raw_data = calloc(4 * BUFSIZE, sizeof(char));
+
+		rc = recv_socket(client_fd, raw_data, sizeof(raw_data));
+
 		/* TODO - parse message with parse_command and populate lib */
+
+		struct lib *client_data = calloc(1, sizeof(struct lib));
+		client_data->libname = calloc(BUFSIZE, sizeof(char));
+		client_data->funcname = calloc(BUFSIZE, sizeof(char));
+		client_data->filename = calloc(BUFSIZE, sizeof(char));
+
+		parse_command(raw_data, client_data->libname, client_data->funcname, client_data->filename);
+		
 		/* TODO - handle request from client */
 		ret = lib_run(&lib);
 	}
