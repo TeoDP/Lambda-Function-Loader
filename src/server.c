@@ -18,13 +18,15 @@
 #define OUTPUT_TEMPLATE "../checker/output/out-XXXXXX"
 #endif
 
+int outfd;
+
 static int lib_prehooks(struct lib *lib)
 {
 	/* TODO: Implement lib_prehooks(). */
 	char *output_filename = calloc(strlen(OUTPUT_TEMPLATE) + 1, sizeof(char));
 	strcpy(output_filename, OUTPUT_TEMPLATE);
-	int outputfile_fd = mkstemp(output_filename);
-	DIE(outputfile_fd < 0, "mkstemp");
+	outfd= mkstemp(output_filename);
+	DIE(outfd < 0, "mkstemp");
 
 	lib->outputfile = output_filename;
 	printf("%s\n", lib->outputfile);
@@ -36,6 +38,8 @@ static int lib_load(struct lib *lib)
 {
 	/* TODO: Implement lib_load(). */
 	// TODO dlopen()
+	void *handle = dlopen(lib->libname, RTLD_LAZY);
+	lib->handle = handle;
 	return 0;
 }
 
@@ -43,17 +47,42 @@ static int lib_execute(struct lib *lib)
 {
 	/* TODO: Implement lib_execute(). */
 	// TODO use dlsym to find the function pointer and run
-	// void *function = NULL;
-	// if (lib->funcname != NULL) {
-	// 	function = dlsym(lib->handle, lib->funcname);
-	// } else {
-	// 	function = dlsym(lib->handle, "run");
+	if (lib->handle == NULL) {
+		perror("handle");
+		return -1;
+	}
+	void (*function)(void *) = NULL;
+	void (*function2)() = NULL;
+	if (lib->funcname[0] != 0) {
+		function = dlsym(lib->handle, lib->funcname);
+	} else {
+		function2 = dlsym(lib->handle, "run");
+	}
+	// if (function == NULL) {
+	// 	perror("function");
+	// 	return -1;
 	// }
-	// if (lib->filename) {
-	// 	(*function)(lib->filename);
-	// } else {
-	// 	(*function)();
-	// }
+
+
+
+	int stdout_fd = dup(1);
+	dup2(outfd, 1);
+
+	setvbuf(stdout, NULL, _IONBF, 0);
+
+	// printf("test\n");
+
+	if (lib->filename[0] != 0) {
+		(*function)(lib->filename);
+	} else {
+		(*function2)();
+		// printf("hello\n");
+		// write(1, "hello2\n", 8);
+		fsync(1);
+	}
+	// printf("world\n");
+	dup2(stdout_fd, 1);
+	close (outfd);
 
 	return 0;
 }
@@ -108,6 +137,8 @@ static int parse_command(const char *buf, char *name, char *func, char *params)
 int main(void)
 {
 	int rc = 0;
+
+	setvbuf(stdout, NULL, _IONBF, 0);
 	/* TODO: Implement server connection. */
 
 	int socketfd = create_socket();
