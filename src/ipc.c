@@ -68,6 +68,7 @@ ssize_t recv_socket(int fd, char *buf, size_t len)
 	while (len > 0) {
 		ssize_t rec = recv(fd, buf, len, 0);
 		if (rec < 0) {
+			printf("%d %d\n", rec, fd);
 			perror("receive failed");
 			return -1;
 		}
