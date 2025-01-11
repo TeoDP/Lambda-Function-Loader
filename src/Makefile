@@ -1,4 +1,4 @@
-CC=gcc
+CC=gcc -g
 CFLAGS=-fPIC -Wall -Wextra
 LDFLAGS=-ldl
 OUTPUT_DIR=$(abspath ../checker/output/)
