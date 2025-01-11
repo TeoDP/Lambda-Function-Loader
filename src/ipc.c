@@ -45,7 +45,7 @@ ssize_t send_socket(int fd, const char *buf, size_t len)
 	int size_left = len;
 	// doing a while loop so that if the data cannot be sent in one go, it will be sent through several send calls
 	while (size_left > 0) {
-		rc = send(fd, buf, size_left, 0);
+		rc = send(fd, buf + len - size_left, size_left, 0);
 		// DIE(rc < 0, "send");
 		if (rc < 0) {
 			perror("send failed");
@@ -68,7 +68,6 @@ ssize_t recv_socket(int fd, char *buf, size_t len)
 	while (len > 0) {
 		ssize_t rec = recv(fd, buf, len, 0);
 		if (rec < 0) {
-			printf("%d %d\n", rec, fd);
 			perror("receive failed");
 			return -1;
 		}
@@ -84,4 +83,5 @@ ssize_t recv_socket(int fd, char *buf, size_t len)
 void close_socket(int fd)
 {
 	/* TODO: Implement close_socket(). */
+	close(fd);
 }

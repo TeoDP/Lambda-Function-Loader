@@ -21,24 +21,47 @@
 static int lib_prehooks(struct lib *lib)
 {
 	/* TODO: Implement lib_prehooks(). */
+	char *output_filename = calloc(strlen(OUTPUT_TEMPLATE) + 1, sizeof(char));
+	strcpy(output_filename, OUTPUT_TEMPLATE);
+	int outputfile_fd = mkstemp(output_filename);
+	DIE(outputfile_fd < 0, "mkstemp");
+
+	lib->outputfile = output_filename;
+	printf("%s\n", lib->outputfile);
+	fflush(stdout);
 	return 0;
 }
 
 static int lib_load(struct lib *lib)
 {
 	/* TODO: Implement lib_load(). */
+	// TODO dlopen()
 	return 0;
 }
 
 static int lib_execute(struct lib *lib)
 {
 	/* TODO: Implement lib_execute(). */
+	// TODO use dlsym to find the function pointer and run
+	// void *function = NULL;
+	// if (lib->funcname != NULL) {
+	// 	function = dlsym(lib->handle, lib->funcname);
+	// } else {
+	// 	function = dlsym(lib->handle, "run");
+	// }
+	// if (lib->filename) {
+	// 	(*function)(lib->filename);
+	// } else {
+	// 	(*function)();
+	// }
+
 	return 0;
 }
 
 static int lib_close(struct lib *lib)
 {
 	/* TODO: Implement lib_close(). */
+	// close the handle with dlclose
 	return 0;
 }
 
@@ -127,9 +150,14 @@ int main(void)
 		printf("%s %s %s\n", client_data->libname, client_data->funcname, client_data->filename);
 
 		fflush(stdout);
+
+		// client_data->outputfile = calloc(BUFSIZE, sizeof(char));
 		
 		/* TODO - handle request from client */
 		ret = lib_run(&lib);
+
+		send_socket(socketfd, client_data->outputfile, strlen(client_data->outputfile));
+		close (client_fd);
 	}
 
 	return 0;
