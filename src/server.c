@@ -97,8 +97,6 @@ int main(void)
 	rc = bind(socketfd, (struct sockaddr *) addr, sizeof(*addr));
 	DIE(rc < 0, "bind");
 
-	printf("ads");
-
 	// TODO: change the number of clients that can be queued (for multi_threading)
 	rc = listen(socketfd, 1);
 	DIE(rc < 0, "listen");
@@ -112,9 +110,10 @@ int main(void)
 		int client_fd = accept(socketfd, NULL, NULL);
 		DIE(client_fd < 0, "accept");
 
+
 		char *raw_data = calloc(4 * BUFSIZE, sizeof(char));
 
-		rc = recv_socket(client_fd, raw_data, sizeof(raw_data));
+		rc = recv_socket(client_fd, raw_data, 4 * BUFSIZE);
 
 		/* TODO - parse message with parse_command and populate lib */
 
@@ -126,6 +125,8 @@ int main(void)
 		parse_command(raw_data, client_data->libname, client_data->funcname, client_data->filename);
 
 		printf("%s %s %s\n", client_data->libname, client_data->funcname, client_data->filename);
+
+		fflush(stdout);
 		
 		/* TODO - handle request from client */
 		ret = lib_run(&lib);
