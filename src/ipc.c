@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 
+#include <asm-generic/socket.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -15,16 +16,9 @@ int create_socket(void)
 	/* TODO: Implement create_socket(). */
 	int socketfd = socket(PF_UNIX, SOCK_STREAM, 0);
 	DIE(socketfd < 0, "socket");
-	struct sockaddr_un *addr = calloc(1, sizeof(*addr));
-	addr->sun_family = AF_UNIX;
-	snprintf(addr->sun_path, strlen(SOCKET_NAME) + 1, SOCKET_NAME);
 
-	int rc = bind(socketfd, (struct sockaddr *) addr, sizeof(*addr));
-	DIE(rc < 0, "bind");
-
-	// TODO: change the number of clients that can be queued (for multi_threading)
-	int rc = listen(socketfd, 1);
-	DIE(rc < 0, "listen");
+	int rc = setsockopt(socketfd, SOL_SOCKET, SO_REUSEADDR, &(int){1}, sizeof(int));
+	DIE(rc < 0, "setsockopt");
 	
 	return socketfd;
 }

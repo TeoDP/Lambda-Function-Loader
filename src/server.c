@@ -8,6 +8,8 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
+#include <sys/socket.h>
+#include <sys/un.h>
 
 #include "ipc.h"
 #include "server.h"
@@ -82,7 +84,22 @@ static int parse_command(const char *buf, char *name, char *func, char *params)
 
 int main(void)
 {
+	int rc = 0;
 	/* TODO: Implement server connection. */
+
+	int socketfd = create_socket();
+
+	struct sockaddr_un *addr = calloc(1, sizeof(*addr));
+	addr->sun_family = AF_UNIX;
+	snprintf(addr->sun_path, strlen(SOCKET_NAME) + 1, SOCKET_NAME);
+	
+	rc = bind(socketfd, (struct sockaddr *) addr, sizeof(*addr));
+	DIE(rc < 0, "bind");
+
+	// TODO: change the number of clients that can be queued (for multi_threading)
+	rc = listen(socketfd, 1);
+	DIE(rc < 0, "listen");
+
 	int ret;
 	struct lib lib;
 
