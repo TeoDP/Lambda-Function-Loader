@@ -26,9 +26,14 @@ int create_socket(void)
 int connect_socket(int fd)
 {
 	/* TODO: Implement connect_socket(). */
-	// TODO: accept
-	int connectfd = accept(fd, NULL, NULL);
-	DIE(connectfd < 0, "accept");
+	// TODO: connect
+
+	struct sockaddr_un *addr = calloc(1, sizeof(*addr));
+	addr->sun_family = AF_UNIX;
+	snprintf(addr->sun_path, strlen(SOCKET_NAME) + 1, SOCKET_NAME);
+
+	int connectfd = connect(fd, (struct sockaddr *) addr, sizeof(*addr));
+	DIE(connectfd < 0, "connect");
 	return connectfd;
 }
 
