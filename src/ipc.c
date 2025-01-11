@@ -62,7 +62,7 @@ ssize_t recv_socket(int fd, char *buf, size_t len)
 	// TOOD get the data from the client
 
 	while (len > 0) {
-		ssize_t rec = recv(fd, buf, sizeof(buf));
+		ssize_t rec = recv(fd, buf, len, 0);
 		if (rec < 0) {
 			perror("receive failed");
 			return -1;
