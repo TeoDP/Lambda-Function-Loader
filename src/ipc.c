@@ -21,6 +21,11 @@ int create_socket(void)
 
 	int rc = bind(socketfd, (struct sockaddr *) addr, sizeof(*addr));
 	DIE(rc < 0, "bind");
+
+	// TODO: change the number of clients that can be queued (for multi_threading)
+	int rc = listen(socketfd, 1);
+	DIE(rc < 0, "listen");
+	
 	return socketfd;
 }
 
