@@ -37,7 +37,23 @@ ssize_t send_socket(int fd, const char *buf, size_t len)
 {
 	/* TODO: Implement send_socket(). */
 	// hello
-	return -1;
+	int rc = 0;
+	int size_left = len;
+	// doing a while loop so that if the data cannot be sent in one go, it will be sent through several send calls
+	while (size_left > 0) {
+		rc = send(fd, buf, size_left, 0);
+		// DIE(rc < 0, "send");
+		if (rc < 0) {
+			perror("send failed");
+			return -1;
+		}
+
+		size_left -= rc;
+		if (rc == 0) {
+			break;
+		}
+	}
+	return 0;
 }
 
 ssize_t recv_socket(int fd, char *buf, size_t len)
