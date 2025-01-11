@@ -131,6 +131,7 @@ int main(void)
 		/* TODO - get message from client */
 		
 		int client_fd = accept(socketfd, NULL, NULL);
+		printf("clientfd = %d\n", client_fd);
 		DIE(client_fd < 0, "accept");
 
 
@@ -156,7 +157,7 @@ int main(void)
 		/* TODO - handle request from client */
 		ret = lib_run(client_data);
 
-		send_socket(socketfd, client_data->outputfile, strlen(client_data->outputfile) + 1);
+		send_socket(client_fd, client_data->outputfile, strlen(client_data->outputfile) + 1);
 		// free(raw_data);
 		close (client_fd);
 	}
